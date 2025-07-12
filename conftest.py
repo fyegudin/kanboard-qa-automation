@@ -2,6 +2,7 @@ import os
 
 import pytest
 import logging
+from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 from config.config import Config
@@ -14,13 +15,27 @@ def playwright():
 
 @pytest.fixture(autouse=True)
 def setup_logging():
+    # Get the absolute path to the directory containing this conftest.py file.
+    project_root = Path(__file__).parent.resolve()
+
+    # Define the logs directory as a subdirectory of the project root
+    log_dir = project_root / "logs"
+
+    # Define the full path to the log file
+    log_file_path = log_dir / "test_execution.log"
+
+    # Create the logs directory if it doesn't exist
+    os.makedirs(log_dir, exist_ok=True)
+
+    # Configure logging
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler("test_execution.log"),
+            logging.FileHandler(log_file_path), # Use the absolute path here
             logging.StreamHandler()
-        ]
+        ],
+        force=True
     )
 
 @pytest.fixture
