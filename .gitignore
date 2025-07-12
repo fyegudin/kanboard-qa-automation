@@ -10,8 +10,13 @@ venv/
 # Environment files
 .env
 .venv
+
 # Python egg files
-.idea
 .idea/
+
+# Allure reports
+allure-results/
+allure-report/
+
 # Playwright
 playwright/.cache/
