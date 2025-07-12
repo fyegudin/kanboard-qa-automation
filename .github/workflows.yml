@@ -1,0 +1,53 @@
+name: CI Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: kanboard
+          POSTGRES_USER: kanboard
+          POSTGRES_PASSWORD: kanboard123
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      kanboard:
+        image: kanboard/kanboard:latest
+        ports:
+          - 8080:80
+        env:
+          DATABASE_URL: postgres://kanboard:kanboard123@postgres:5432/kanboard
+        depends_on:
+          postgres:
+            condition: service_healthy
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12.8'
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Install Playwright browsers
+      run: poetry run playwright install
+
+    - name: Run tests
+      run: poetry run pytest --alluredir=./allure-results
+
+    - name: Upload Allure report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: allure-report
+        path: ./allure-results

@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "kanboard-qa-automation"
+version = "1.0.0"
+description = "Automation QA Framework for Kanboard"
+authors = ["Felix Yegudin"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12.8"
+playwright = "^1.42.0"
+pytest = "^8.1.1"
+pytest-playwright = "^0.4.0"
+allure-pytest = "^2.13.2"
+psycopg2-binary = "^2.9.9"
+python-dotenv = "^1.0.0"
+faker = "^24.9.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest-xdist = "^3.5.0"
+black = "^24.3.0"
+flake8 = "^7.0.0"
+mypy = "^1.9.0"
+
+[tool.poetry.scripts]
+tests = "pytest -v"
+tests-with-report = "pytest --alluredir=./allure-results && allure serve ./allure-results"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: kanboard
+      POSTGRES_USER: kanboard
+      POSTGRES_PASSWORD: kanboard123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kanboard -d kanboard"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kanboard:
+    image: kanboard/kanboard:latest
+    ports:
+      - "8080:80"
+    environment:
+      DATABASE_URL: postgres://kanboard:kanboard123@postgres:5432/kanboard
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - kanboard_data:/var/www/app/data
+
+volumes:
+  kanboard_data:
+  postgres_data:
